@@ -23,14 +23,11 @@ class DocumentMarkdownDecoder extends Converter<String, Document> {
         UnderlineInlineSyntax(),
       ],
       encodeHtml: false,
-    ).parse(input);
+    ).parseInline(input);
 
     final document = Document.blank();
-    final nodes = mdNodes
-        .map((e) => _parseNode(e))
-        .whereNotNull()
-        .flattened
-        .toList(growable: false); // avoid lazy evaluation
+    final nodes =
+        mdNodes.map((e) => _parseNode(e)).whereNotNull().flattened.toList(growable: false); // avoid lazy evaluation
     if (nodes.isNotEmpty) {
       document.insert([0], nodes);
     }

@@ -54,8 +54,7 @@ AppFlowyEditorSliceAttributes? defaultAppFlowyEditorSliceAttributes = (
 /// 2. If the index is 0, slice the attributes from the next position.
 /// 3. If the index is greater than 0, slice the attributes from the previous position.
 /// 4. If the attributes is not supported, return null.
-AppFlowyEditorSliceAttributes? appflowyEditorSliceAttributes =
-    defaultAppFlowyEditorSliceAttributes;
+AppFlowyEditorSliceAttributes? appflowyEditorSliceAttributes = defaultAppFlowyEditorSliceAttributes;
 
 // constant number: 2^53 - 1
 const int _maxInt = 9007199254740991;
@@ -89,14 +88,14 @@ class TextInsert extends TextOperation {
   Object? get data => text;
 
   @override
-  Attributes? get attributes => _attributes != null ? {..._attributes} : null;
+  Attributes? get attributes => _attributes != null ? {...?_attributes} : null;
 
   @override
   Map<String, dynamic> toJson() {
     final result = <String, dynamic>{
       'insert': text,
     };
-    if (_attributes != null && _attributes.isNotEmpty) {
+    if (_attributes != null && (_attributes?.isNotEmpty ?? false)) {
       result['attributes'] = attributes;
     }
     return result;
@@ -106,9 +105,7 @@ class TextInsert extends TextOperation {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is TextInsert &&
-        other.text == text &&
-        _mapEquals(_attributes, other._attributes);
+    return other is TextInsert && other.text == text && _mapEquals(_attributes, other._attributes);
   }
 
   @override
@@ -126,14 +123,14 @@ class TextRetain extends TextOperation {
   final Attributes? _attributes;
 
   @override
-  Attributes? get attributes => _attributes != null ? {..._attributes} : null;
+  Attributes? get attributes => _attributes != null ? {...?_attributes} : null;
 
   @override
   Map<String, dynamic> toJson() {
     final result = <String, dynamic>{
       'retain': length,
     };
-    if (_attributes != null && _attributes.isNotEmpty) {
+    if (_attributes != null && (_attributes?.isNotEmpty ?? false)) {
       result['attributes'] = attributes;
     }
     return result;
@@ -143,9 +140,7 @@ class TextRetain extends TextOperation {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is TextRetain &&
-        other.length == length &&
-        _mapEquals(_attributes, other._attributes);
+    return other is TextRetain && other.length == length && _mapEquals(_attributes, other._attributes);
   }
 
   @override
@@ -274,16 +269,14 @@ class Delta extends Iterable<TextOperation> {
 
   /// Insert operations have an `insert` key defined.
   /// A String value represents inserting text.
-  void insert(String text, {Attributes? attributes}) =>
-      add(TextInsert(text, attributes: attributes));
+  void insert(String text, {Attributes? attributes}) => add(TextInsert(text, attributes: attributes));
 
   /// Retain operations have a Number `retain` key defined representing the number of characters to keep (other libraries might use the name keep or skip).
   /// An optional `attributes` key can be defined with an Object to describe formatting changes to the character range.
   /// A value of `null` in the `attributes` Object represents removal of that key.
   ///
   /// *Note: It is not necessary to retain the last characters of a document as this is implied.*
-  void retain(int length, {Attributes? attributes}) =>
-      add(TextRetain(length, attributes: attributes));
+  void retain(int length, {Attributes? attributes}) => add(TextRetain(length, attributes: attributes));
 
   /// Delete operations have a Number `delete` key defined representing the number of characters to delete.
   void delete(int length) => add(TextDelete(length: length));
@@ -304,12 +297,9 @@ class Delta extends Iterable<TextOperation> {
     final operations = <TextOperation>[];
 
     final firstOther = otherIter.peek();
-    if (firstOther != null &&
-        firstOther is TextRetain &&
-        firstOther.attributes == null) {
+    if (firstOther != null && firstOther is TextRetain && firstOther.attributes == null) {
       int firstLeft = firstOther.length;
-      while (
-          thisIter.peek() is TextInsert && thisIter.peekLength() <= firstLeft) {
+      while (thisIter.peek() is TextInsert && thisIter.peekLength() <= firstLeft) {
         firstLeft -= thisIter.peekLength();
         final next = thisIter.next();
         operations.add(next);
@@ -351,9 +341,7 @@ class Delta extends Iterable<TextOperation> {
           }
 
           // Optimization if rest of other is just retain
-          if (!otherIter.hasNext &&
-              delta._operations.isNotEmpty &&
-              delta._operations.last == newOp) {
+          if (!otherIter.hasNext && delta._operations.isNotEmpty && delta._operations.last == newOp) {
             final rest = Delta(operations: thisIter.rest());
             return (delta + rest)..chop();
           }
@@ -433,8 +421,7 @@ class Delta extends Iterable<TextOperation> {
   void trim() {
     if (isNotEmpty) {
       final last = _operations.last;
-      if (last is TextRetain &&
-          (last.attributes == null || last.attributes!.isEmpty)) {
+      if (last is TextRetain && (last.attributes == null || last.attributes!.isEmpty)) {
         _operations.removeLast();
       }
     }
@@ -542,8 +529,7 @@ class Delta extends Iterable<TextOperation> {
   }
 
   String toPlainText() {
-    _plainText ??=
-        _operations.whereType<TextInsert>().map((op) => op.text).join();
+    _plainText ??= _operations.whereType<TextInsert>().map((op) => op.text).join();
     return _plainText!;
   }
 

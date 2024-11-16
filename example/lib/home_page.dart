@@ -134,8 +134,7 @@ class _HomePageState extends State<HomePage> {
           _buildListTile(context, 'With Large Document (10000+ lines)', () {
             final nodes = List.generate(
               10000,
-              (index) =>
-                  paragraphNode(text: '$index ${generateRandomString(50)}'),
+              (index) => paragraphNode(text: '$index ${generateRandomString(50)}'),
             );
             final editorState = EditorState(
               document: Document(root: pageNode(children: nodes)),
@@ -146,9 +145,9 @@ class _HomePageState extends State<HomePage> {
             _loadEditor(context, jsonString);
           }),
           _buildListTile(context, 'With Example.html', () async {
-            final htmlString =
-                await rootBundle.loadString('assets/example.html');
+            final htmlString = await rootBundle.loadString('assets/example.html');
             final html = htmlToDocument(htmlString);
+            print(html);
             final jsonString = Future<String>.value(
               jsonEncode(
                 html.toJson(),

@@ -56,7 +56,7 @@ class CommandShortcutEvent {
   List<Keybinding> get keybindings => _keybindings;
   List<Keybinding> _keybindings = [];
 
-  String? get description => _getDescription != null ? _getDescription() : null;
+  String? get description => _getDescription != null ? _getDescription.toString() : null;
 
   /// This _completely_ clears the command, ensuring that
   /// it cannot be triggered until it is updated again.
@@ -74,10 +74,7 @@ class CommandShortcutEvent {
     String? macOSCommand,
     String? linuxCommand,
   }) {
-    if (command == null &&
-        windowsCommand == null &&
-        macOSCommand == null &&
-        linuxCommand == null) {
+    if (command == null && windowsCommand == null && macOSCommand == null && linuxCommand == null) {
       return;
     }
     var matched = false;
@@ -102,8 +99,7 @@ class CommandShortcutEvent {
     }
 
     if (matched) {
-      _keybindings =
-          this.command.split(',').map((e) => Keybinding.parse(e)).toList();
+      _keybindings = this.command.split(',').map((e) => Keybinding.parse(e)).toList();
     }
   }
 
@@ -130,17 +126,13 @@ class CommandShortcutEvent {
   }
 
   @override
-  String toString() =>
-      'CommandShortcutEvent(key: $key, command: $command, handler: $handler)';
+  String toString() => 'CommandShortcutEvent(key: $key, command: $command, handler: $handler)';
 
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is CommandShortcutEvent &&
-        other.key == key &&
-        other.command == command &&
-        other.handler == handler;
+    return other is CommandShortcutEvent && other.key == key && other.command == command && other.handler == handler;
   }
 
   @override
